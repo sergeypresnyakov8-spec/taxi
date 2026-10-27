@@ -19,14 +19,16 @@ self.addEventListener('fetch', e => {
   const url = new URL(req.url);
   const sameOrigin = url.origin === location.origin;
   if (!sameOrigin && !FONT_HOSTS.includes(url.hostname)) return; // API не трогаем
-  // сначала кэш, в фоне обновляем (новая версия подхватится при следующем открытии)
   e.respondWith(caches.open(CACHE).then(async cache => {
     const cached = await cache.match(req, { ignoreSearch: true });
-    const fresh = fetch(req).then(res => {
+    const fetchAndStore = () => fetch(req).then(res => {
       if (res && (res.ok || res.type === 'opaque')) cache.put(req, res.clone());
       return res;
-    }).catch(() => cached);
-    return cached || fresh;
+    });
+    // файлы приложения: сначала сеть (всегда свежая версия), кэш только без интернета
+    if (sameOrigin) return fetchAndStore().catch(() => cached || Response.error());
+    // шрифты: сначала кэш, в фоне обновляем
+    return cached || fetchAndStore();
   }));
 });
 
