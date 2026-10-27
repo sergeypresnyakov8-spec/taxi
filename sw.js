@@ -1,5 +1,5 @@
 // Service worker: оболочка приложения работает без сети, данные всегда идут напрямую в API.
-const CACHE = 'taxi-v1';
+const CACHE = 'taxi-v2';
 const SHELL = ['./', 'index.html', 'app.js', 'config.js', 'style.css', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png'];
 const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 
